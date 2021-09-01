@@ -110,10 +110,11 @@ class SoundToImage:
         image = Image.new("RGBA", (size, size))
         pix = image.load()
         width, height = image.size
-        cur_pixel = 0
-        for x in range(height):
-            for y in range(width):
-                pix[x, y] = self.pixels[cur_pixel]
-                cur_pixel += 1
-
+        #cur_pixel = 0
+        #for x in range(height):
+        #    for y in range(width):
+        #        pix[x, y] = self.pixels[cur_pixel]
+        #        cur_pixel += 1
+        image.putdata(self.pixels)
+        #only supports rgba s images such as bmp
         image.save(self.args.outfile)
