@@ -11,8 +11,8 @@ class Timer:
 
         self.elapsed = self.end - self.start
         if self.elapsed > 3600:
-            self.elapsed = str(self.elapsed / 3600) + " hours."
+            self.elapsed = f'{str(self.elapsed / 3600)} hours.'
         elif 60 < self.elapsed < 3600:
-            self.elapsed = str(self.elapsed / 60) + " minutes."
+            self.elapsed = f'{str(self.elapsed / 60)} minutes.'
         else:
-            self.elapsed = str(self.elapsed) + " seconds."
+            self.elapsed = f'{str(self.elapsed)} seconds.'
