@@ -40,19 +40,20 @@ class ImageToSound:
         file.close()
 
     def combine_frame(self, frame):
-        value = 0
-        for frequency in self.frequencies:
-            value += self.calculate_sine(frequency, frame, self.args.framerate)
+        value = sum(
+            self.calculate_sine(frequency, frame, self.args.framerate)
+            for frequency in self.frequencies
+        )
+
         return value / self.total_pixels
 
     def combine_wave(self):
-        if self.args.threading:
-            mp_pool = Pool()
-            return mp_pool.imap(self.combine_frame, tqdm(range(self.total_frames), desc="Calculating Waves",
-                                                         dynamic_ncols=True))
-        else:
+        if not self.args.threading:
             return (self.combine_frame(frame) for frame in tqdm(range(self.total_frames), desc="Calculating Waves",
                                                                 dynamic_ncols=True))
+        mp_pool = Pool()
+        return mp_pool.imap(self.combine_frame, tqdm(range(self.total_frames), desc="Calculating Waves",
+                                                     dynamic_ncols=True))
 
     @staticmethod
     def calculate_sine(frequency, frame=1, framerate=44100, amplitude=1):
@@ -81,7 +82,7 @@ class SoundToImage:
             self.read_file()
             self.calc_pixels()
             self.write_image()
-        print("Conversion Complete, total time: " + timer.elapsed)
+        print(f"Conversion Complete, total time: {timer.elapsed}")
 
     def read_file(self):
         with open(self.args.infile, 'rb') as f:
@@ -92,13 +93,13 @@ class SoundToImage:
     def read_in_chunks(file, chunk_size=2):
         while True:
             data = file.read(chunk_size)
-            if not len(data) == chunk_size:
+            if len(data) != chunk_size:
                 break
             yield data
 
     def calc_pixels(self):
         rgba = []
-        for index, i in enumerate(tqdm(self.data, desc="Calculating pixels", dynamic_ncols=True)):
+        for i in tqdm(self.data, desc="Calculating pixels", dynamic_ncols=True):
             if abs(i) < 1:
                 rgba.append(round(math.degrees(math.asin(i))))
             if len(rgba) == 3:
